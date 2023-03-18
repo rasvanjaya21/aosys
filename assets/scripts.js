@@ -54,7 +54,6 @@ async function fetchPatterns() {
 async function renderExam() {
 	exams = await fetchExams();
 	answers = await fetchAnswers();
-	console.log(answers);
 	patterns = await fetchPatterns();
 }
 
@@ -90,8 +89,6 @@ function saveAnswer() {
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
 	if (selectedAnswer != null) {
 		savedAnswer.push(selectedAnswer.getAttribute("data-id"));
-	} else {
-		console.log("HEY")
 	}
 }
 
