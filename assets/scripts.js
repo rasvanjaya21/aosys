@@ -10,15 +10,25 @@ const thirdLabelOption = document.getElementById("third-label-option");
 const fourthLabelOption = document.getElementById("fourth-label-option");
 const nextExamBtn = document.getElementById("next-exam");
 const timerInterval = setInterval(startTimer, 1000);
+const resultArea = document.getElementById("result");
+const scoreText = document.getElementById("score");
+const clickPerExamsText = document.getElementById("click-per-exam");
+const totalClickText = document.getElementById("total-click");
+const intervalPerExamsText = document.getElementById("interval-per-exam");
+const totalIntervalText = document.getElementById("total-interval");
 
 let exams;
 let answers = [];
 let pattern;
 let currentQuestion = 0;
 let totalScore = 0;
+let currentInterval = 0;
 let totalInterval = 0;
-let savedAnswers = [];
 let intervalPerExams = [];
+let currentClick = 0;
+let totalClick = 0;
+let clickPerExams = [];
+let savedAnswers = [];
 
 async function fetchExams() {
 	try {
@@ -57,9 +67,9 @@ async function renderExam() {
 }
 
 function startExam() {
-	totalInterval = 0;
+	currentInterval = 0;
 	startExamBtn.disabled = true;
-	startExamBtn.innerHTML = "Ujian Sedang Berlangsung"
+	startExamBtn.style.display = "none";
 	secondsLabel.innerHTML = "00";
 	minutesLabel.innerHTML = "00";
 	question.innerHTML = exams[currentQuestion].question;
@@ -79,6 +89,8 @@ function nextExam() {
 	if(currentQuestion > exams.length -1) {
 		finishExam();
 	} else {
+		intervalPerExams.push(currentInterval);
+		totalInterval += currentInterval;
 		resetTimer();
 		resetPrevAnswer();
 		startExam();
@@ -90,6 +102,8 @@ function saveAnswer() {
 
 	if (selectedAnswer != null) {
 		savedAnswers.push(selectedAnswer.getAttribute("data-id"));
+	} else {
+		savedAnswers.push("x");
 	}
 }
 
@@ -102,21 +116,31 @@ function resetPrevAnswer() {
 }
 
 function finishExam() {
+	startExamBtn.innerHTML = "Ujian Telah Selesai";
+	nextExamBtn.disabled = true;
+	nextExamBtn.innerHTML = "Selesai";
+	resultArea.style.display = "block";
+	intervalPerExams.push(currentInterval);
+	console.log(intervalPerExams);
 	checkScore();
-	alert("UJIAN SELESAI, SCORE : " + totalScore + "TOTAL SECOND" + totalInterval);
+	scoreText.innerHTML = totalScore;
+	clickPerExamsText.innerHTML = "[ " + clickPerExams + " ]";
+	totalClickText.innerHTML = totalClick;
+	intervalPerExamsText.innerHTML = "[ " + intervalPerExams + " ]";
+	totalIntervalText.innerHTML = totalInterval;
 	stopTimer();
 }
 
 function startTimer() {
-	++totalInterval;
-	secondsLabel.innerHTML = pad(totalInterval % 60);
-	minutesLabel.innerHTML = pad(parseInt(totalInterval / 60));
+	++currentInterval;
+	secondsLabel.innerHTML = pad(currentInterval % 60);
+	minutesLabel.innerHTML = pad(parseInt(currentInterval / 60));
 }
 
 function resetTimer() {
+	currentInterval = 0;
 	document.getElementById("minutes").innerHTML = "00";
 	document.getElementById("seconds").innerHTML = "00";
-	totalInterval = 0;
 }
 
 function stopTimer() {
@@ -134,9 +158,13 @@ function checkScore() {
 			totalScore += 20;
 		}
 	}
-	
+}
+
+function handleClick() {
+	console.log("HEY");
 }
 
 renderExam();
 startExamBtn.addEventListener("click", startExam);
+formQuestion.addEventListener("change", handleClick);
 nextExamBtn.addEventListener("click", nextExam);
