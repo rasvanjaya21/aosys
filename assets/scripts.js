@@ -54,7 +54,7 @@ async function fetchPatterns() {
 async function renderExam() {
 	exams = await fetchExams();
 	answers = await fetchAnswers();
-	patterns = await fetchAnswers();
+	patterns = await fetchPatterns();
 }
 
 function startExam() {
