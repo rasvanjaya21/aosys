@@ -11,7 +11,7 @@ const fourthLabelOption = document.getElementById("fourth-label-option");
 const nextExamBtn = document.getElementById("next-exam");
 
 var exams;
-var answers;
+var answers = []
 var patterns;
 
 let totalSeconds = 0;
@@ -54,6 +54,7 @@ async function fetchPatterns() {
 async function renderExam() {
 	exams = await fetchExams();
 	answers = await fetchAnswers();
+	console.log(answers);
 	patterns = await fetchPatterns();
 }
 
@@ -125,13 +126,12 @@ function pad(val) {
 
 function checkScore () {
 
-	var decryptedAnswers = CryptoJS.AES.decrypt(answers, patterns);
-	console.log(decryptedAnswers.toString(CryptoJS.enc.Utf8));
-
 	for (i = 0; i < savedAnswer.length; i++) {
+		console.log("BEFORE" ,answers[i])
+		answers[i] = CryptoJS.AES.decrypt(answers[i], patterns).toString(CryptoJS.enc.Utf8);
+		console.log("AFTER" , answers[i])
 		if (savedAnswer[i] == answers[i]) {
 			totalScores += 20;
-			// console.log(totalScores);
 		}
 	}
 }
