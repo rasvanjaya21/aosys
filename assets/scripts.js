@@ -10,16 +10,16 @@ const thirdLabelOption = document.getElementById("third-label-option");
 const fourthLabelOption = document.getElementById("fourth-label-option");
 const nextExamBtn = document.getElementById("next-exam");
 
-var exams;
-var answers = []
-var patterns;
-
-let totalSeconds = 0;
+let exams;
+let answers = [];
+let pattern;
+let totalIntervals = 0;
 let currentQuestion = 0;
-let savedAnswer = []
+let savedAnswer = [];
 let totalScores = 0;
+let intervalPerExam = [];
 
-setInterval(startTimer, 1000);
+const timerInterval = setInterval(startTimer, 1000);
 
 async function fetchExams() {
 	try {
@@ -41,11 +41,11 @@ async function fetchAnswers() {
 	}
 }
 
-async function fetchPatterns() {
+async function fetchpattern() {
 	try {
-		const patternsResponse = await fetch("https://raw.githubusercontent.com/rasvanjaya21/aosys/master/assets/patterns.json");
-		const patterns = await patternsResponse.json();
-		return patterns;
+		const patternResponse = await fetch("https://raw.githubusercontent.com/rasvanjaya21/aosys/master/assets/pattern.json");
+		const pattern = await patternResponse.json();
+		return pattern;
 	} catch (error) {
 		console.error(error);
 	}
@@ -54,11 +54,11 @@ async function fetchPatterns() {
 async function renderExam() {
 	exams = await fetchExams();
 	answers = await fetchAnswers();
-	patterns = await fetchPatterns();
+	pattern = await fetchpattern();
 }
 
 function startExam() {
-	totalSeconds = 0;
+	totalIntervals = 0;
 	startExamBtn.disabled = true;
 	startExamBtn.innerHTML = "Ujian Sedang Berlangsung"
 	secondsLabel.innerHTML = "00";
@@ -76,17 +76,19 @@ function startExam() {
 function nextExam() {
 	currentQuestion++;
 	saveAnswer();
+
 	if(currentQuestion > exams.length -1) {
-		finishExam()
+		finishExam();
 	} else {
 		resetTimer();
-		resetPrevAnswer()
+		resetPrevAnswer();
 		startExam();
 	}
 }
 
 function saveAnswer() {
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
+
 	if (selectedAnswer != null) {
 		savedAnswer.push(selectedAnswer.getAttribute("data-id"));
 	}
@@ -94,37 +96,41 @@ function saveAnswer() {
 
 function resetPrevAnswer() {
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
+
 	if (selectedAnswer != null) {
 		selectedAnswer.checked = false;
 	}
 }
 
 function finishExam() {
-	checkScore()
-	alert("UJIAN SELESAI, SCORE : " + totalScores)
-	return
+	checkScore();
+	alert("UJIAN SELESAI, SCORE : " + totalScores + "TOTAL SECOND" + totalIntervals);
+	stopTimer();
 }
 
 function startTimer() {
-	++totalSeconds;
-	secondsLabel.innerHTML = pad(totalSeconds % 60);
-	minutesLabel.innerHTML = pad(parseInt(totalSeconds / 60));
+	++totalIntervals;
+	secondsLabel.innerHTML = pad(totalIntervals % 60);
+	minutesLabel.innerHTML = pad(parseInt(totalIntervals / 60));
 }
 
 function resetTimer() {
 	document.getElementById("minutes").innerHTML = "00";
 	document.getElementById("seconds").innerHTML = "00";
-	totalSeconds = 0;
+	totalIntervals = 0;
+}
+
+function stopTimer() {
+	clearInterval(timerInterval);
 }
 
 function pad(val) {
 	return val > 9 ? val : "0" + val;
 }
 
-function checkScore () {
-
+function checkScore() {
 	for (i = 0; i < savedAnswer.length; i++) {
-		answers[i] = CryptoJS.AES.decrypt(answers[i], patterns).toString(CryptoJS.enc.Utf8);
+		answers[i] = CryptoJS.AES.decrypt(answers[i], pattern).toString(CryptoJS.enc.Utf8);
 		if (savedAnswer[i] == answers[i]) {
 			totalScores += 20;
 		}
