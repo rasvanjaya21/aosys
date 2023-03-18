@@ -9,17 +9,16 @@ const secondLabelOption = document.getElementById("second-label-option");
 const thirdLabelOption = document.getElementById("third-label-option");
 const fourthLabelOption = document.getElementById("fourth-label-option");
 const nextExamBtn = document.getElementById("next-exam");
+const timerInterval = setInterval(startTimer, 1000);
 
 let exams;
 let answers = [];
 let pattern;
-let totalIntervals = 0;
 let currentQuestion = 0;
-let savedAnswer = [];
-let totalScores = 0;
-let intervalPerExam = [];
-
-const timerInterval = setInterval(startTimer, 1000);
+let totalScore = 0;
+let totalInterval = 0;
+let savedAnswers = [];
+let intervalPerExams = [];
 
 async function fetchExams() {
 	try {
@@ -58,7 +57,7 @@ async function renderExam() {
 }
 
 function startExam() {
-	totalIntervals = 0;
+	totalInterval = 0;
 	startExamBtn.disabled = true;
 	startExamBtn.innerHTML = "Ujian Sedang Berlangsung"
 	secondsLabel.innerHTML = "00";
@@ -90,7 +89,7 @@ function saveAnswer() {
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
 
 	if (selectedAnswer != null) {
-		savedAnswer.push(selectedAnswer.getAttribute("data-id"));
+		savedAnswers.push(selectedAnswer.getAttribute("data-id"));
 	}
 }
 
@@ -104,20 +103,20 @@ function resetPrevAnswer() {
 
 function finishExam() {
 	checkScore();
-	alert("UJIAN SELESAI, SCORE : " + totalScores + "TOTAL SECOND" + totalIntervals);
+	alert("UJIAN SELESAI, SCORE : " + totalScore + "TOTAL SECOND" + totalInterval);
 	stopTimer();
 }
 
 function startTimer() {
-	++totalIntervals;
-	secondsLabel.innerHTML = pad(totalIntervals % 60);
-	minutesLabel.innerHTML = pad(parseInt(totalIntervals / 60));
+	++totalInterval;
+	secondsLabel.innerHTML = pad(totalInterval % 60);
+	minutesLabel.innerHTML = pad(parseInt(totalInterval / 60));
 }
 
 function resetTimer() {
 	document.getElementById("minutes").innerHTML = "00";
 	document.getElementById("seconds").innerHTML = "00";
-	totalIntervals = 0;
+	totalInterval = 0;
 }
 
 function stopTimer() {
@@ -129,10 +128,10 @@ function pad(val) {
 }
 
 function checkScore() {
-	for (i = 0; i < savedAnswer.length; i++) {
+	for (i = 0; i < savedAnswers.length; i++) {
 		answers[i] = CryptoJS.AES.decrypt(answers[i], pattern).toString(CryptoJS.enc.Utf8);
-		if (savedAnswer[i] == answers[i]) {
-			totalScores += 20;
+		if (savedAnswers[i] == answers[i]) {
+			totalScore += 20;
 		}
 	}
 	
