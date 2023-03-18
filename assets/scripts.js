@@ -127,13 +127,12 @@ function pad(val) {
 function checkScore () {
 
 	for (i = 0; i < savedAnswer.length; i++) {
-		console.log("BEFORE" ,answers[i])
 		answers[i] = CryptoJS.AES.decrypt(answers[i], patterns).toString(CryptoJS.enc.Utf8);
-		console.log("AFTER" , answers[i])
 		if (savedAnswer[i] == answers[i]) {
 			totalScores += 20;
 		}
 	}
+	
 }
 
 renderExam();
