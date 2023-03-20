@@ -9,13 +9,13 @@ const secondLabelOption = document.getElementById("second-label-option");
 const thirdLabelOption = document.getElementById("third-label-option");
 const fourthLabelOption = document.getElementById("fourth-label-option");
 const nextExamBtn = document.getElementById("next-exam");
-const timerInterval = setInterval(startTimer, 1000);
-const resultArea = document.getElementById("result");
+const result = document.getElementById("result");
 const scoreText = document.getElementById("score");
 const clickPerExamsText = document.getElementById("click-per-exam");
 const totalClickText = document.getElementById("total-click");
 const intervalPerExamsText = document.getElementById("interval-per-exam");
 const totalIntervalText = document.getElementById("total-interval");
+const timerInterval = setInterval(startTimer, 1000);
 
 let exams;
 let answers = [];
@@ -67,39 +67,56 @@ async function renderExam() {
 }
 
 function startExam() {
+	// reset current interval and click to value 0
 	currentInterval = 0;
-	startExamBtn.disabled = true;
+	currentClick = 0;
+	
+	// hide start exam button 
 	startExamBtn.style.display = "none";
-	secondsLabel.innerHTML = "00";
+	
+	// display timer label
+	timerExam.style.display = "inline-block";
 	minutesLabel.innerHTML = "00";
+	secondsLabel.innerHTML = "00";
+	
+	// display question and answer
+	formQuestion.style.display = "block";
 	question.innerHTML = exams[currentQuestion].question;
 	firstLabelOption.innerHTML = exams[currentQuestion].options[0];
 	secondLabelOption.innerHTML = exams[currentQuestion].options[1];
 	thirdLabelOption.innerHTML = exams[currentQuestion].options[2];
 	fourthLabelOption.innerHTML = exams[currentQuestion].options[3];
-	timerExam.style.display = "inline-block";
-	formQuestion.style.display = "block";
+	
+	// display next exam button 
 	nextExamBtn.style.display = "block";
 }
 
 function nextExam() {
+	// next question
 	currentQuestion++;
-	saveAnswer();
 
-	if(currentQuestion > exams.length -1) {
+	// check question is done
+	if(currentQuestion > exams.length - 1) {
 		finishExam();
 	} else {
-		intervalPerExams.push(currentInterval);
-		totalInterval += currentInterval;
-		resetTimer();
+		// save answer and reset previous answer, reset timer, start exam again when question is undone
+		saveAnswer();
 		resetPrevAnswer();
 		startExam();
 	}
 }
 
 function saveAnswer() {
+	// get current checked answer
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
 
+	// save necessary
+	intervalPerExams.push(currentInterval);
+	clickPerExams.push(currentClick);
+	totalInterval += currentInterval;
+	totalClick += currentClick;
+
+	// checked answer validation
 	if (selectedAnswer != null) {
 		savedAnswers.push(selectedAnswer.getAttribute("data-id"));
 	} else {
@@ -108,39 +125,41 @@ function saveAnswer() {
 }
 
 function resetPrevAnswer() {
+	// get current checked answer
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
-
+	
+	// reset answer radio checked
 	if (selectedAnswer != null) {
 		selectedAnswer.checked = false;
 	}
 }
 
 function finishExam() {
-	startExamBtn.innerHTML = "Ujian Telah Selesai";
+	// push necessary and validate score
+	intervalPerExams.push(currentInterval);
+	clickPerExams.push(currentClick);
+	checkScore();
+
+	// next button : diable and change value
 	nextExamBtn.disabled = true;
 	nextExamBtn.innerHTML = "Selesai";
-	resultArea.style.display = "block";
-	intervalPerExams.push(currentInterval);
-	console.log(intervalPerExams);
-	checkScore();
+
+	// display result area
+	result.style.display = "block";
 	scoreText.innerHTML = totalScore;
 	clickPerExamsText.innerHTML = "[ " + clickPerExams + " ]";
 	totalClickText.innerHTML = totalClick;
 	intervalPerExamsText.innerHTML = "[ " + intervalPerExams + " ]";
 	totalIntervalText.innerHTML = totalInterval;
+	
+	// stop timer
 	stopTimer();
 }
 
 function startTimer() {
-	++currentInterval;
+	currentInterval++;
 	secondsLabel.innerHTML = pad(currentInterval % 60);
 	minutesLabel.innerHTML = pad(parseInt(currentInterval / 60));
-}
-
-function resetTimer() {
-	currentInterval = 0;
-	document.getElementById("minutes").innerHTML = "00";
-	document.getElementById("seconds").innerHTML = "00";
 }
 
 function stopTimer() {
@@ -160,11 +179,11 @@ function checkScore() {
 	}
 }
 
-function handleClick() {
-	console.log("HEY");
+function clickedAnswer() {
+	currentClick++;
 }
 
 renderExam();
 startExamBtn.addEventListener("click", startExam);
-formQuestion.addEventListener("change", handleClick);
+formQuestion.addEventListener("change", clickedAnswer);
 nextExamBtn.addEventListener("click", nextExam);
