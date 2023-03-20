@@ -1,2 +1,2 @@
 # aosys
-PROJECT PMM : Automatic Scoring System
+PROJECT SMK : Automatic Scoring System
