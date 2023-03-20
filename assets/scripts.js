@@ -8,33 +8,33 @@ const firstLabelOption = document.getElementById("first-label-option");
 const secondLabelOption = document.getElementById("second-label-option");
 const thirdLabelOption = document.getElementById("third-label-option");
 const fourthLabelOption = document.getElementById("fourth-label-option");
-const nextExamBtn = document.getElementById("next-exam");
+const nextQuestionBtn = document.getElementById("next-question");
 const result = document.getElementById("result");
 const scoreText = document.getElementById("score");
-const clickPerExamsText = document.getElementById("click-per-exam");
+const clickPerQuestionsText = document.getElementById("click-per-question");
 const totalClickText = document.getElementById("total-click");
-const intervalPerExamsText = document.getElementById("interval-per-exam");
-const totalIntervalText = document.getElementById("total-interval");
-const timerInterval = setInterval(startTimer, 1000);
+const durationPerQuestionsText = document.getElementById("duration-per-question");
+const totalDurationText = document.getElementById("total-duration");
+const timerDuration = setInterval(startTimer, 1000);
 
-let exams;
+let questions;
 let answers = [];
 let pattern;
 let currentQuestion = 0;
 let totalScore = 0;
-let currentInterval = 0;
-let totalInterval = 0;
-let intervalPerExams = [];
+let currentDuration = 0;
+let totalDuration = 0;
+let durationPerQuestions = [];
 let currentClick = 0;
 let totalClick = 0;
-let clickPerExams = [];
+let clickPerQuestions = [];
 let savedAnswers = [];
 
-async function fetchExams() {
+async function fetchQuestions() {
 	try {
-		const examsResponse = await fetch("https://raw.githubusercontent.com/rasvanjaya21/aosys/master/assets/questions.json");
-		const exam = await examsResponse.json();
-		return exam;
+		const questionsResponse = await fetch("https://raw.githubusercontent.com/rasvanjaya21/aosys/master/assets/questions.json");
+		const question = await questionsResponse.json();
+		return question;
 	} catch (error) {
 		console.error(error);
 	}
@@ -60,18 +60,18 @@ async function fetchpattern() {
 	}
 }
 
-async function renderExam() {
-	exams = await fetchExams();
+async function renderQuestion() {
+	questions = await fetchQuestions();
 	answers = await fetchAnswers();
 	pattern = await fetchpattern();
 }
 
-function startExam() {
-	// reset current interval and click to value 0
-	currentInterval = 0;
+function startQuestion() {
+	// reset current duration and click to value 0
+	currentDuration = 0;
 	currentClick = 0;
 	
-	// hide start exam button 
+	// hide start question button 
 	startExamBtn.style.display = "none";
 	
 	// display timer label
@@ -81,28 +81,28 @@ function startExam() {
 	
 	// display question and answer
 	formQuestion.style.display = "block";
-	question.innerHTML = exams[currentQuestion].question;
-	firstLabelOption.innerHTML = exams[currentQuestion].options[0];
-	secondLabelOption.innerHTML = exams[currentQuestion].options[1];
-	thirdLabelOption.innerHTML = exams[currentQuestion].options[2];
-	fourthLabelOption.innerHTML = exams[currentQuestion].options[3];
+	question.innerHTML = questions[currentQuestion].question;
+	firstLabelOption.innerHTML = questions[currentQuestion].options[0];
+	secondLabelOption.innerHTML = questions[currentQuestion].options[1];
+	thirdLabelOption.innerHTML = questions[currentQuestion].options[2];
+	fourthLabelOption.innerHTML = questions[currentQuestion].options[3];
 	
-	// display next exam button 
-	nextExamBtn.style.display = "block";
+	// display next question button 
+	nextQuestionBtn.style.display = "block";
 }
 
-function nextExam() {
+function nextQuestion() {
 	// next question
 	currentQuestion++;
 
 	// check question is done
-	if(currentQuestion > exams.length - 1) {
-		finishExam();
+	if(currentQuestion > questions.length - 1) {
+		finishQuestion();
 	} else {
-		// save answer and reset previous answer, reset timer, start exam again when question is undone
+		// save answer and reset previous answer, reset timer, start question again when question is undone
 		saveAnswer();
 		resetPrevAnswer();
-		startExam();
+		startQuestion();
 	}
 }
 
@@ -111,9 +111,9 @@ function saveAnswer() {
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
 
 	// save necessary
-	intervalPerExams.push(currentInterval);
-	clickPerExams.push(currentClick);
-	totalInterval += currentInterval;
+	durationPerQuestions.push(currentDuration);
+	clickPerQuestions.push(currentClick);
+	totalDuration += currentDuration;
 	totalClick += currentClick;
 
 	// checked answer validation
@@ -134,36 +134,36 @@ function resetPrevAnswer() {
 	}
 }
 
-function finishExam() {
+function finishQuestion() {
 	// push necessary and validate score
-	intervalPerExams.push(currentInterval);
-	clickPerExams.push(currentClick);
+	durationPerQuestions.push(currentDuration);
+	clickPerQuestions.push(currentClick);
 	checkScore();
 
 	// next button : diable and change value
-	nextExamBtn.disabled = true;
-	nextExamBtn.innerHTML = "Selesai";
+	nextQuestionBtn.disabled = true;
+	nextQuestionBtn.innerHTML = "Selesai";
 
 	// display result area
 	result.style.display = "block";
 	scoreText.innerHTML = totalScore;
-	clickPerExamsText.innerHTML = "[ " + clickPerExams + " ]";
+	clickPerQuestionsText.innerHTML = "[ " + clickPerQuestions + " ]";
 	totalClickText.innerHTML = totalClick;
-	intervalPerExamsText.innerHTML = "[ " + intervalPerExams + " ]";
-	totalIntervalText.innerHTML = totalInterval;
+	durationPerQuestionsText.innerHTML = "[ " + durationPerQuestions + " ]";
+	totalDurationText.innerHTML = totalDuration;
 	
 	// stop timer
 	stopTimer();
 }
 
 function startTimer() {
-	currentInterval++;
-	secondsLabel.innerHTML = pad(currentInterval % 60);
-	minutesLabel.innerHTML = pad(parseInt(currentInterval / 60));
+	currentDuration++;
+	secondsLabel.innerHTML = pad(currentDuration % 60);
+	minutesLabel.innerHTML = pad(parseInt(currentDuration / 60));
 }
 
 function stopTimer() {
-	clearInterval(timerInterval);
+	clearInterval(timerDuration);
 }
 
 function pad(val) {
@@ -183,7 +183,7 @@ function clickedAnswer() {
 	currentClick++;
 }
 
-renderExam();
-startExamBtn.addEventListener("click", startExam);
+renderQuestion();
+startExamBtn.addEventListener("click", startQuestion);
 formQuestion.addEventListener("change", clickedAnswer);
-nextExamBtn.addEventListener("click", nextExam);
+nextQuestionBtn.addEventListener("click", nextQuestion);
