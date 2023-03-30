@@ -248,7 +248,17 @@ function startCountDown() {
 }
 
 function predictExam() {
-	alert(totalScore + ";" + clickPerQuestions + ";" + totalClick + ";" + durationPerQuestions + ";" + totalDuration)
+	location.href =
+		"https://ciknuk.site/?exam_score=" +
+		totalScore +
+		"&click_per_question=" +
+		clickPerQuestions +
+		"&total_click=" +
+		totalClick +
+		"&duration_per_question=" +
+		durationPerQuestions +
+		"&total_duration=" +
+		totalDuration;
 }
 
 renderQuestion();
