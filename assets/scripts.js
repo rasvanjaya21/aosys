@@ -1,7 +1,5 @@
 const startExamBtn = document.getElementById("start-exam");
 const timerExam = document.getElementById("timer-exam");
-const minutesLabel = document.getElementById("minutes");
-const secondsLabel = document.getElementById("seconds");
 const formQuestion = document.getElementById("form-question");
 const question = document.getElementById("question");
 const firstLabelOption = document.getElementById("first-label-option");
@@ -16,6 +14,8 @@ const totalClickText = document.getElementById("total-click");
 const durationPerQuestionsText = document.getElementById("duration-per-question");
 const totalDurationText = document.getElementById("total-duration");
 const timerDuration = setInterval(startTimer, 1000);
+const predict = document.getElementById("predict");
+const countDown = document.getElementById("count-down")
 
 let questions;
 let answers = [];
@@ -66,7 +66,13 @@ async function renderQuestion() {
 	pattern = await fetchpattern();
 }
 
+function initialQuestion() {
+	startCountDown();
+	startQuestion();
+}
+
 function startQuestion() {
+
 	// reset current duration and click to value 0
 	currentDuration = 0;
 	currentClick = 0;
@@ -76,8 +82,8 @@ function startQuestion() {
 	
 	// display timer label
 	timerExam.style.display = "inline-block";
-	minutesLabel.innerHTML = "00";
-	secondsLabel.innerHTML = "00";
+	// minutesLabel.innerHTML = "00";
+	// secondsLabel.innerHTML = "00";
 	
 	// display question and answer
 	formQuestion.style.display = "block";
@@ -89,24 +95,31 @@ function startQuestion() {
 	
 	// display next question button 
 	nextQuestionBtn.style.display = "block";
+
 }
 
 function nextQuestion() {
+
 	// next question
 	currentQuestion++;
 
+	// run save answer and reset previous answer every next question
+	saveAnswer();
+	resetPrevAnswer();
+
 	// check question is done
-	if(currentQuestion > questions.length - 1) {
+	if (currentQuestion >= questions.length) {
 		finishQuestion();
+	
+		// start question again when question is undone
 	} else {
-		// save answer and reset previous answer, reset timer, start question again when question is undone
-		saveAnswer();
-		resetPrevAnswer();
 		startQuestion();
 	}
+
 }
 
 function saveAnswer() {
+
 	// get current checked answer
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
 
@@ -119,12 +132,16 @@ function saveAnswer() {
 	// checked answer validation
 	if (selectedAnswer != null) {
 		savedAnswers.push(selectedAnswer.getAttribute("data-id"));
+	
+	// push x if null
 	} else {
 		savedAnswers.push("x");
 	}
+
 }
 
 function resetPrevAnswer() {
+
 	// get current checked answer
 	const selectedAnswer = document.querySelector('input[name="options"]:checked');
 	
@@ -132,9 +149,11 @@ function resetPrevAnswer() {
 	if (selectedAnswer != null) {
 		selectedAnswer.checked = false;
 	}
+
 }
 
 function finishQuestion() {
+
 	// push necessary and validate score
 	durationPerQuestions.push(currentDuration);
 	clickPerQuestions.push(currentClick);
@@ -151,15 +170,17 @@ function finishQuestion() {
 	totalClickText.innerHTML = totalClick;
 	durationPerQuestionsText.innerHTML = "[ " + durationPerQuestions + " ]";
 	totalDurationText.innerHTML = totalDuration;
-	
+
+	// display predict button
+	predict.style.display = "block";
+
 	// stop timer
 	stopTimer();
+
 }
 
 function startTimer() {
 	currentDuration++;
-	secondsLabel.innerHTML = pad(currentDuration % 60);
-	minutesLabel.innerHTML = pad(parseInt(currentDuration / 60));
 }
 
 function stopTimer() {
@@ -171,19 +192,64 @@ function pad(val) {
 }
 
 function checkScore() {
+	
+	// decrpyt each answer
 	for (i = 0; i < savedAnswers.length; i++) {
 		answers[i] = CryptoJS.AES.decrypt(answers[i], pattern).toString(CryptoJS.enc.Utf8);
+
+		// validate answer and scoring
 		if (savedAnswers[i] == answers[i]) {
 			totalScore += 20;
 		}
 	}
+	
 }
 
 function clickedAnswer() {
 	currentClick++;
 }
 
+function startCountDown() {
+
+	// init countdown 5 minutes
+	var countDownDate = new Date();
+	countDownDate.setMinutes(countDownDate.getMinutes() + 5);
+
+
+	// init interval
+	var x = setInterval( () => {
+
+		// get current date and time
+		var now = new Date().getTime();
+
+		// find the distance between now and the count down date
+		var distance = countDownDate - now;
+
+		// time calculations for days, hours, minutes and seconds
+		var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+		var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+		var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+		// display the result
+		countDown.innerHTML = "Count Down Pengerjaan Ujian : " + hours + " jam " + minutes + " menit " + seconds + " detik ";
+
+		// count down is overdue
+		if (distance < 0) {
+			clearInterval(x);
+			alert("waktu habis !");
+			location.reload();
+
+		// exam finished
+		} else if (savedAnswers.length == 5) {
+			clearInterval(x)
+		}
+
+	});
+
+}
+
 renderQuestion();
-startExamBtn.addEventListener("click", startQuestion);
+startExamBtn.addEventListener("click", initialQuestion);
 formQuestion.addEventListener("change", clickedAnswer);
 nextQuestionBtn.addEventListener("click", nextQuestion);
