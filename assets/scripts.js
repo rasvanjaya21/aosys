@@ -111,7 +111,7 @@ function nextQuestion() {
 	if (currentQuestion >= questions.length) {
 		finishQuestion();
 	
-		// start question again when question is undone
+	// start question again when question is undone
 	} else {
 		startQuestion();
 	}
