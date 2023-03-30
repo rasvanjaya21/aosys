@@ -154,9 +154,7 @@ function resetPrevAnswer() {
 
 function finishQuestion() {
 
-	// push necessary and validate score
-	durationPerQuestions.push(currentDuration);
-	clickPerQuestions.push(currentClick);
+	// validate score
 	checkScore();
 
 	// next button : diable and change value
@@ -249,7 +247,12 @@ function startCountDown() {
 
 }
 
+function predictExam() {
+	alert(totalScore + ";" + clickPerQuestions + ";" + totalClick + ";" + durationPerQuestions + ";" + totalDuration)
+}
+
 renderQuestion();
 startExamBtn.addEventListener("click", initialQuestion);
 formQuestion.addEventListener("change", clickedAnswer);
 nextQuestionBtn.addEventListener("click", nextQuestion);
+predict.addEventListener("click", predictExam);
