@@ -230,7 +230,7 @@ function startCountDown() {
 		var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
 		// display the result
-		countDown.innerHTML = "Count Down Pengerjaan Ujian : " + hours + " jam " + minutes + " menit " + seconds + " detik ";
+		countDown.innerHTML = "Count Down Ujian : " + hours + " jam " + minutes + " menit " + seconds + " detik ";
 
 		// count down is overdue
 		if (distance < 0) {
