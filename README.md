@@ -1,2 +1,2 @@
 # aosys
-PROJECT SMK : Automatic Scoring System
+PROJECT SMK : Automatic Multiple Choice Scoring System
