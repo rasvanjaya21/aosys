@@ -249,7 +249,8 @@ function startCountDown() {
 
 function predictExam() {
 	location.href =
-		"https://ciknuk.site/?exam_score=" +
+		"https://ciknuk.site/?redirect=1" +
+		"&exam_score=" +
 		totalScore +
 		"&click_per_question=" +
 		clickPerQuestions +
@@ -259,7 +260,6 @@ function predictExam() {
 		durationPerQuestions +
 		"&total_duration=" +
 		totalDuration +
-		"&redirect=1" +
 		"#01-multiple-choices-answer";
 }
 
