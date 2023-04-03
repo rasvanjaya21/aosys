@@ -259,6 +259,7 @@ function predictExam() {
 		durationPerQuestions +
 		"&total_duration=" +
 		totalDuration +
+		"&redirect=1" +
 		"#01-multiple-choices-answer";
 }
 
