@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/ciky2869/public_html/aosys/
+    - /bin/cp -r * $DEPLOYPATH
