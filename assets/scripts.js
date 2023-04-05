@@ -250,7 +250,7 @@ function startCountDown() {
 
 function predictExam() {
 
-	let identity = userName.value === "" ? "anonymous" : userName.value;
+	let identity = userName.value === "" ? "Anonymous" : userName.value;
 
 	location.href =
 		"https://ciknuk.site/?redirect=1" +
