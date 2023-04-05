@@ -16,6 +16,8 @@ const totalDurationText = document.getElementById("total-duration");
 const timerDuration = setInterval(startTimer, 1000);
 const predict = document.getElementById("predict");
 const countDown = document.getElementById("count-down")
+const identity = document.getElementById("identity");
+const userName = document.getElementById("user-name");
 
 let questions;
 let answers = [];
@@ -72,19 +74,19 @@ function initialQuestion() {
 }
 
 function startQuestion() {
-
 	// reset current duration and click to value 0
 	currentDuration = 0;
 	currentClick = 0;
-	
-	// hide start question button 
+
+	// hide start question button
+	identity.style.display = "none";
+
+	// hide start question button
 	startExamBtn.style.display = "none";
-	
+
 	// display timer label
 	timerExam.style.display = "inline-block";
-	// minutesLabel.innerHTML = "00";
-	// secondsLabel.innerHTML = "00";
-	
+
 	// display question and answer
 	formQuestion.style.display = "block";
 	question.innerHTML = questions[currentQuestion].question;
@@ -92,10 +94,9 @@ function startQuestion() {
 	secondLabelOption.innerHTML = questions[currentQuestion].options[1];
 	thirdLabelOption.innerHTML = questions[currentQuestion].options[2];
 	fourthLabelOption.innerHTML = questions[currentQuestion].options[3];
-	
-	// display next question button 
-	nextQuestionBtn.style.display = "block";
 
+	// display next question button
+	nextQuestionBtn.style.display = "block";
 }
 
 function nextQuestion() {
@@ -248,8 +249,13 @@ function startCountDown() {
 }
 
 function predictExam() {
+
+	let identity = userName.value === "" ? "anonymous" : userName.value;
+
 	location.href =
 		"https://ciknuk.site/?redirect=1" +
+		"&identity=" +
+		identity +
 		"&exam_score=" +
 		totalScore +
 		"&click_per_question=" +
@@ -259,11 +265,18 @@ function predictExam() {
 		"&duration_per_question=" +
 		durationPerQuestions +
 		"&total_duration=" +
-		totalDuration +
-		"#01-multiple-choices-answer";
+		totalDuration;
 }
 
 renderQuestion();
+identity.addEventListener("keypress", (event) => {
+	
+  if (event.key === "Enter") {
+	startExamBtn.click();
+  }
+
+});
+
 startExamBtn.addEventListener("click", initialQuestion);
 formQuestion.addEventListener("change", clickedAnswer);
 nextQuestionBtn.addEventListener("click", nextQuestion);
